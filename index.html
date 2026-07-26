@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Приветааа!!!</title>
+    <title>Спасибо за игру!</title>
     <style>
         * {
             margin: 0;
@@ -12,235 +12,62 @@
         }
 
         body {
-            background: #030803;
-            overflow: hidden;
-            font-family: 'Courier New', monospace;
+            background: #000;
             height: 100vh;
-            width: 100vw;
-            position: fixed;
-            touch-action: none;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Courier New', monospace;
         }
 
-        canvas {
-            position: fixed;
-            top: 0;
-            left: 0;
-            z-index: 1;
-        }
-
-        .title {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            z-index: 10;
-            font-size: 42px;
-            color: #fff;
-            text-shadow: 0 0 25px #00ff66, 0 0 50px #00ff66, 0 0 90px #00ff44;
-            pointer-events: none;
-            letter-spacing: 3px;
+        .container {
             text-align: center;
+        }
+
+        h1 {
+            color: #fff;
+            font-size: 36px;
+            font-weight: normal;
+            margin-bottom: 40px;
+            letter-spacing: 2px;
+        }
+
+        .visits {
+            color: #fff;
+            font-size: 16px;
+            opacity: 0.7;
+        }
+
+        #count {
+            font-size: 72px;
+            font-weight: bold;
+            display: block;
+            margin-top: 10px;
+            opacity: 1;
         }
     </style>
 </head>
 <body>
-    <canvas id="canvas"></canvas>
-    <h1 class="title">Приветааа!!!</h1>
+    <div class="container">
+        <h1>Спасибо за игру!</h1>
+        <div class="visits">
+            Посетили нас:
+            <span id="count">...</span>
+        </div>
+    </div>
 
     <script>
-        const canvas = document.getElementById('canvas');
-        const ctx = canvas.getContext('2d');
-        
-        let W, H;
-        
-        function resize() {
-            W = canvas.width = window.innerWidth;
-            H = canvas.height = window.innerHeight;
-        }
-        resize();
-        window.addEventListener('resize', resize);
-
-        const vidImg = new Image();
-        vidImg.src = 'vid.png';
-
-        const items = [];
-        const ITEM_COUNT = 18;
-        const PUSH_FORCE = 3.5;
-        const PUSH_RADIUS = 150;
-
-        class FloatingImage {
-            constructor() {
-                this.size = Math.random() * 30 + 40;
-                
-                this.x = Math.random() * W;
-                this.y = Math.random() * H;
-                
-                // Начальная скорость сразу задает бодрое движение
-                const speed = Math.random() * 1.2 + 0.8;
-                const angle = Math.random() * Math.PI * 2;
-                this.vx = Math.cos(angle) * speed;
-                this.vy = Math.sin(angle) * speed;
-                
-                this.opacity = 0.65;
-                
-                this.rotation = Math.random() * Math.PI * 2;
-                this.rotationSpeed = (Math.random() - 0.5) * 0.02;
-            }
-
-            update() {
-                // Прямое движение без затухания
-                this.x += this.vx;
-                this.y += this.vy;
-                this.rotation += this.rotationSpeed;
-
-                // Жесткий контроль скорости: объекты ВСЕГДА движутся (не быстрее max и не медленнее min)
-                const currentSpeed = Math.hypot(this.vx, this.vy);
-                const minSpeed = 0.8;
-                const maxSpeed = 3.5;
-
-                if (currentSpeed < minSpeed) {
-                    const angle = Math.atan2(this.vy, this.vx) || Math.random() * Math.PI * 2;
-                    this.vx = Math.cos(angle) * minSpeed;
-                    this.vy = Math.sin(angle) * minSpeed;
-                } else if (currentSpeed > maxSpeed) {
-                    this.vx = (this.vx / currentSpeed) * maxSpeed;
-                    this.vy = (this.vy / currentSpeed) * maxSpeed;
-                }
-
-                // Понятный отскок от границ экрана с гарантированным выталкиванием
-                const margin = this.size * 0.5;
-                if (this.x < margin) { 
-                    this.x = margin; 
-                    this.vx = Math.abs(this.vx) + 0.3; 
-                }
-                if (this.x > W - margin) { 
-                    this.x = W - margin; 
-                    this.vx = -(Math.abs(this.vx) + 0.3); 
-                }
-                if (this.y < margin) { 
-                    this.y = margin; 
-                    this.vy = Math.abs(this.vy) + 0.3; 
-                }
-                if (this.y > H - margin) { 
-                    this.y = H - margin; 
-                    this.vy = -(Math.abs(this.vy) + 0.3); 
-                }
-            }
-
-            draw() {
-                if (!vidImg.complete) return;
-                
-                ctx.save();
-                ctx.globalAlpha = this.opacity;
-                ctx.translate(this.x, this.y);
-                ctx.rotate(this.rotation);
-                ctx.drawImage(vidImg, -this.size / 2, -this.size / 2, this.size, this.size);
-                ctx.restore();
-            }
-
-            push(px, py, mult = 1) {
-                const dx = this.x - px;
-                const dy = this.y - py;
-                const dist = Math.hypot(dx, dy);
-                
-                if (dist < PUSH_RADIUS && dist > 0) {
-                    const force = (1 - dist / PUSH_RADIUS) * PUSH_FORCE * mult;
-                    const angle = Math.atan2(dy, dx);
-                    
-                    // Добавляем импульс от курсора/тапа
-                    this.vx += Math.cos(angle) * force;
-                    this.vy += Math.sin(angle) * force;
-                    
-                    this.rotationSpeed += (Math.random() - 0.5) * 0.04;
-                }
+        async function updateVisits() {
+            try {
+                const res = await fetch('https://api.vidokl.xyz/plus');
+                const data = await res.json();
+                document.getElementById('count').textContent = data.visits;
+            } catch (e) {
+                document.getElementById('count').textContent = '∞';
             }
         }
 
-        function init() {
-            items.length = 0;
-            for (let i = 0; i < ITEM_COUNT; i++) {
-                items.push(new FloatingImage());
-            }
-        }
-
-        vidImg.onload = init;
-        if (vidImg.complete) init();
-
-        // Упругие столкновения объектов (как шары) без потери энергии
-        function collideItems(a, b) {
-            const dx = b.x - a.x;
-            const dy = b.y - a.y;
-            const dist = Math.hypot(dx, dy);
-            const minDist = (a.size + b.size) / 2 + 2;
-            
-            if (dist < minDist && dist > 0) {
-                const overlap = minDist - dist;
-                const nx = dx / dist;
-                const ny = dy / dist;
-                
-                // Раздвигаем, чтобы не застревали друг в друге
-                a.x -= nx * overlap * 0.5;
-                a.y -= ny * overlap * 0.5;
-                b.x += nx * overlap * 0.5;
-                b.y += ny * overlap * 0.5;
-                
-                // Обмен скоростями по нормали (сохранение импульса)
-                const tempVx = a.vx;
-                const tempVy = a.vy;
-                a.vx = b.vx + nx * 0.5;
-                a.vy = b.vy + ny * 0.5;
-                b.vx = tempVx - nx * 0.5;
-                b.vy = tempVy - ny * 0.5;
-            }
-        }
-
-        let pointerX = -1000;
-        let pointerY = -1000;
-        let isMoving = false;
-        let moveTimer;
-
-        function onMove(x, y) {
-            pointerX = x;
-            pointerY = y;
-            isMoving = true;
-            clearTimeout(moveTimer);
-            moveTimer = setTimeout(() => isMoving = false, 80);
-        }
-
-        window.addEventListener('mousemove', e => onMove(e.clientX, e.clientY));
-        window.addEventListener('touchmove', e => {
-            if (e.touches.length > 0) onMove(e.touches[0].clientX, e.touches[0].clientY);
-        }, { passive: true });
-
-        window.addEventListener('click', e => {
-            items.forEach(item => item.push(e.clientX, e.clientY, 3));
-        });
-        window.addEventListener('touchstart', e => {
-            if (e.touches.length > 0) {
-                items.forEach(item => item.push(e.touches[0].clientX, e.touches[0].clientY, 3));
-            }
-        }, { passive: true });
-
-        function animate() {
-            ctx.clearRect(0, 0, W, H);
-
-            items.forEach(item => {
-                if (isMoving) item.push(pointerX, pointerY, 1.2);
-                item.update();
-            });
-
-            for (let i = 0; i < items.length; i++) {
-                for (let j = i + 1; j < items.length; j++) {
-                    collideItems(items[i], items[j]);
-                }
-            }
-
-            items.forEach(item => item.draw());
-
-            requestAnimationFrame(animate);
-        }
-
-        requestAnimationFrame(animate);
+        updateVisits();
     </script>
 </body>
 </html>
